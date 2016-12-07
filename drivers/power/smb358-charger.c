@@ -765,7 +765,6 @@ extern int get_charger_type(void)
 }
 struct delayed_work USB_3s_retry_kicker_work;
 struct delayed_work USB_3s_retry_work;
-extern void focal_usb_detection(bool plugin);          //ASUS BSP Jacob_kung : notify touch cable in +++
 /* write 06h[6:5]="00" or "11" */
 int smb358_charging_toggle(charging_toggle_level_t level, bool on)
 {
@@ -798,7 +797,6 @@ int smb358_charging_toggle(charging_toggle_level_t level, bool on)
 		BAT_DBG("BattID is out of range, set discharging!\n");
 		}
 		result_toggle = false;
-		//focal_usb_detection(false); //ASUS BSP Jacob_kung : notify touch cable out +++
 	} else {
 		result_toggle = on;
 	}
@@ -913,7 +911,6 @@ int smb358_charging_toggle_zd550_ze600_ze550(charging_toggle_level_t level, bool
 			BAT_DBG("BattID is out of range, set discharging!\n");
 		}
 		result_toggle = false;
-		//focal_usb_detection(false); //ASUS BSP Jacob_kung : notify touch cable out +++
 	} else {
 		result_toggle = on;
 	}
@@ -3516,12 +3513,6 @@ int setSMB358Charger(int usb_state)
 		if (smb358_dev) {			
 			if(!wake_lock_active(&UsbCable_Lock))
 				wake_lock(&UsbCable_Lock);
-			if(asus_PRJ_ID == ASUS_ZD550KL) {
-				focal_usb_detection(true);
-			}
-			if(asus_PRJ_ID == ASUS_ZE600KL) {
-				focal_usb_detection(true);
-			}
 			if(asus_PRJ_ID==ASUS_ZE550KL){
 				mutex_lock(&g_usb_state_lock);
 				/*BSP david : do initial setting & config current*/
@@ -3529,7 +3520,6 @@ int setSMB358Charger(int usb_state)
 				mutex_unlock(&g_usb_state_lock);
 				/*BSP david : do JEITA*/
 				smb358_update_aicl_work(5);
-				focal_usb_detection(true);
 			}else{
 				/* BSP Clay: AC debounce policy +++*/
 				if ( AC_IN_EVER ){
@@ -3561,18 +3551,7 @@ int setSMB358Charger(int usb_state)
 	case USB_IN:
 	case UNKNOWN_IN:
 	case SE1_IN:
-		if(asus_PRJ_ID == ASUS_ZD550KL) {
-			if(usb_state==USB_IN)
-				focal_usb_detection(true);
-		}
-		if(asus_PRJ_ID == ASUS_ZE600KL) {
-			if(usb_state==USB_IN)
-				focal_usb_detection(true);
-		}
-		if(asus_PRJ_ID==ASUS_ZE550KL){
-			if(usb_state==USB_IN)
-				focal_usb_detection(true);
-		}else{	
+		if(!asus_PRJ_ID==ASUS_ZE550KL){
 			/* BSP Clay: AC debounce policy */
 			if(AC_IN_EVER == true){
 				AC_IN_EVER = false;
@@ -3595,15 +3574,8 @@ int setSMB358Charger(int usb_state)
 		if (smb358_dev) {	
 			if(wake_lock_active(&UsbCable_Lock))
 				wake_unlock(&UsbCable_Lock);
-			if(asus_PRJ_ID == ASUS_ZD550KL) {
-				focal_usb_detection(false);
-			}
-			if(asus_PRJ_ID == ASUS_ZE600KL) {
-				focal_usb_detection(false);
-			}
 			if(asus_PRJ_ID==ASUS_ZE550KL){
 				schedule_delayed_work(&AC_unstable_det, 0);
-				focal_usb_detection(false);
 			}else{
 				/* BSP_Clay: AC debounce policy */
 				if ( AC_IN_EVER ){
