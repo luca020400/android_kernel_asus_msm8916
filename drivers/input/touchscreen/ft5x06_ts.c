@@ -31,6 +31,9 @@
 #include <linux/debugfs.h>
 #include <linux/sensors.h>
 #include <linux/input/ft5x06_ts.h>
+#ifdef CONFIG_TOUCHSCREEN_FT5X06_ASUS
+#include <linux/input/ft5x06_ts_asus.h>
+#endif
 
 #if defined(CONFIG_FB)
 #include <linux/notifier.h>
@@ -569,6 +572,11 @@ static int ft5x06_report_gesture_doubleclick(struct input_dev *ip_dev)
 		input_mt_report_pointer_emulation(ip_dev, false);
 		input_sync(ip_dev);
 	}
+
+#ifdef CONFIG_TOUCHSCREEN_FT5X06_ASUS
+	ft5x06_report_gesture_key(ip_dev, FT_GESTURE_DOUBLECLICK_ID);
+#endif
+
 	return 0;
 }
 
@@ -634,6 +642,10 @@ static int ft5x06_report_gesture(struct i2c_client *i2c_client,
 	input_mt_report_slot_state(ip_dev, MT_TOOL_FINGER, 0);
 	input_mt_report_pointer_emulation(ip_dev, false);
 	input_sync(ip_dev);
+
+#ifdef CONFIG_TOUCHSCREEN_FT5X06_ASUS
+	ft5x06_report_gesture_key(ip_dev, buf[0]);
+#endif
 
 	return 0;
 }
@@ -2192,6 +2204,10 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 	__set_bit(EV_ABS, input_dev->evbit);
 	__set_bit(BTN_TOUCH, input_dev->keybit);
 	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
+
+#ifdef CONFIG_TOUCHSCREEN_FT5X06_ASUS
+	ft5x06_ts_probe_asus(input_dev);
+#endif
 
 	input_mt_init_slots(input_dev, pdata->num_max_touches, 0);
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, pdata->x_min,

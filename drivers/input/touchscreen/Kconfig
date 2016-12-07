@@ -955,6 +955,14 @@ config TOUCHSCREEN_FT5X06_GESTURE
 
          If unsure, say N.
 
+config TOUCHSCREEN_FT5X06_ASUS
+       tristate "FocalTech asus touchscreen support"
+       depends on TOUCHSCREEN_FT5X06_GESTURE
+       help
+         Say Y here if you have an asus ft5X06 touchscreen.
+
+         If unsure, say N.
+
 config TOUCHSCREEN_MSTAR21XX
        tristate "mstar touchscreens"
        depends on I2C
