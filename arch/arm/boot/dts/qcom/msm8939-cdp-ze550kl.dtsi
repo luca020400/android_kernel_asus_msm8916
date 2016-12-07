@@ -27,13 +27,13 @@
 			pinctrl-0 = <&ts_int_active &ts_reset_active>;
 			pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
 			pinctrl-2 = <&ts_release>;
-				focaltech,name = "ft5346";
+			focaltech,name = "ft5346";
 			focaltech,family-id = <0x54>;
 			focaltech,reset-gpio = <&msm_gpio 12 0x0>;
 			focaltech,irq-gpio = <&msm_gpio 13 0x2008>;
-			focaltech,display-coords = <0 0 720 1280>;
-			focaltech,panel-coords = <0 0 720 1400>;
-			focaltech,button-map= <139 102 158>;
+			focaltech,display-coords = <0 0 1080 1920>;
+			focaltech,panel-coords = <0 0 1080 2098>;
+			focaltech,button-map= <158 102 580>;
 			focaltech,no-force-update;
 			focaltech,i2c-pull-up;
 			focaltech,group-id = <1>;
@@ -48,7 +48,20 @@
 			focaltech,fw-delay-era-flsh-ms = <2000>;
 			focaltech,fw-auto-cal;
 			focaltech,ignore-id-check;
+			focaltech,gesture-support;
+			focaltech,resume-in-workqueue;
 		};
+	};
+
+	gen-vkeys {
+		compatible = "qcom,gen-vkeys";
+		label = "ft5x06_ts";
+		qcom,disp-maxx = <1080>;
+		qcom,disp-maxy = <1920>;
+		qcom,panel-maxx = <1080>;
+		qcom,panel-maxy = <2061>;
+		qcom,key-codes = <158 102 580>;
+		qcom,y-offset = <0>;
 	};
 
 	i2c@78b8000 { /* BLSP1 QUP6 */
