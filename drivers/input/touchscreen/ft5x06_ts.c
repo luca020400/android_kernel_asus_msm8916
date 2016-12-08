@@ -2382,6 +2382,8 @@ static int ft5x06_ts_probe(struct i2c_client *client,
 			goto free_gesture_class;
 		}
 
+		data->gesture_pdata->gesture_enable_to_set = 1;
+
 		dev_set_drvdata(gesture_pdata->dev, data);
 		err = device_create_file(gesture_pdata->dev,
 					&dev_attr_enable);
