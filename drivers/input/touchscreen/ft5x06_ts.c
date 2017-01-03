@@ -1311,26 +1311,40 @@ static int fb_notifier_callback(struct notifier_block *self,
 {
 	struct fb_event *evdata = data;
 	int *blank;
+	int new_status;
 	struct ft5x06_ts_data *ft5x06_data =
 		container_of(self, struct ft5x06_ts_data, fb_notif);
 
 	if (evdata && evdata->data && ft5x06_data && ft5x06_data->client) {
 		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+			case FB_BLANK_NORMAL:
+			case FB_BLANK_VSYNC_SUSPEND:
+			case FB_BLANK_HSYNC_SUSPEND:
+				new_status = 0;
+				break;
+			default:
+			case FB_BLANK_POWERDOWN:
+				new_status = 1;
+				break;
+		}
+
 		if (ft5x06_data->pdata->resume_in_workqueue) {
 			if (event == FB_EARLY_EVENT_BLANK &&
-						 *blank == FB_BLANK_UNBLANK)
+						 !new_status)
 				schedule_work(&ft5x06_data->fb_notify_work);
 			else if (event == FB_EVENT_BLANK &&
-						 *blank == FB_BLANK_POWERDOWN) {
+						 new_status) {
 				flush_work(&ft5x06_data->fb_notify_work);
 				ft5x06_ts_suspend(&ft5x06_data->client->dev);
 			}
 		} else {
 			if (event == FB_EVENT_BLANK) {
-				if (*blank == FB_BLANK_UNBLANK)
+				if (!new_status)
 					ft5x06_ts_resume(
 						&ft5x06_data->client->dev);
-				else if (*blank == FB_BLANK_POWERDOWN)
+				else
 					ft5x06_ts_suspend(
 						&ft5x06_data->client->dev);
 			}
